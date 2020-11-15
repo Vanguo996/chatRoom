@@ -4,11 +4,17 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/websocket"
+	"chatRoom/backend/pkg/websocket"
 )
 
 func wsHandler(rw http.ResponseWriter, r *http.Request) {
 	conn, err := websocket.Upgrader(rw, r)
+	if err != nil {
+		fmt.Fprintf(rw, "%+V\n", err)
+	}
+
+	go websocket.Writer(conn)
+	websocket.Reader(conn)
 
 }
 

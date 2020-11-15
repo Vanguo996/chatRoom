@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
@@ -42,4 +43,33 @@ func Reader(conn *websocket.Conn) {
 		log.Print(err)
 		return
 	}
+}
+
+func Writer(conn *websocket.Conn) {
+	// messageconn.NextWriter()
+
+	for {
+		fmt.Println("sending message...")
+		messageType, r, err := conn.NextReader()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		w, err := conn.NextWriter(messageType)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		if _, err := io.Copy(w, r); err != nil {
+			fmt.Println(err)
+			return
+		}
+		if err := w.Close(); err != nil {
+			fmt.Println(err)
+			return
+		}
+
+	}
+
 }
